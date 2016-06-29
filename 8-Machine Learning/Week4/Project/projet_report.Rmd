@@ -1,0 +1,144 @@
+---
+title: "Prediction Assignment"
+author: "YE"
+date: "19 juin 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways.
+
+## Data
+
+The training data for this project are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+
+The test data are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+The data for this project come from this source: http://groupware.les.inf.puc-rio.br/har. If you use the document you create for this class for any purpose please cite them as they have been very generous in allowing their data to be used for this kind of assignment.
+
+# Analysis plan
+
+To achieve the main goal, which is to predict the "classe" variable, we are going to follow the steps bellow: 
+
+1.  Loading and cleaning data: Remove near zero variables, exclude columns with more than 40% of missing values (NA).
+
+2.  Trial two methods: Random Forest and Gradient Boosted Model(GBM)
+
+3.  Exploration and interpration of the results and choose one of them or combine the two models.
+
+4.  Apply the final on test data set to predict the variable classe.
+
+
+### 1.  Loading and cleaning data
+
+
+```{r}
+library(caret)
+
+trainingCSV <- read.csv('pml-training.csv', na.strings = c("", "NA", "#DIV/0!"))
+
+##Subsetting and Cleaning data set
+
+train_partion <- createDataPartition(y=trainingCSV$classe, p=0.7, list = FALSE)
+
+training <- trainingCSV[train_partion,]
+testing <- trainingCSV[-train_partion,]
+
+##Cleaning data : Remove near zero variables with the caret package function nearzero
+
+cols <- nearZeroVar(training)
+training <- training[, -cols]
+
+## create another subset without NZV variables:
+
+NZVvars <- names(training) %in% c("new_window", "kurtosis_roll_belt", "kurtosis_picth_belt",
+"kurtosis_yaw_belt", "skewness_roll_belt", "skewness_roll_belt.1", "skewness_yaw_belt",
+"max_yaw_belt", "min_yaw_belt", "amplitude_yaw_belt", "avg_roll_arm", "stddev_roll_arm",
+"var_roll_arm", "avg_pitch_arm", "stddev_pitch_arm", "var_pitch_arm", "avg_yaw_arm",
+"stddev_yaw_arm", "var_yaw_arm", "kurtosis_roll_arm", "kurtosis_picth_arm",
+"kurtosis_yaw_arm", "skewness_roll_arm", "skewness_pitch_arm", "skewness_yaw_arm",
+"max_roll_arm", "min_roll_arm", "min_pitch_arm", "amplitude_roll_arm", "amplitude_pitch_arm",
+"kurtosis_roll_dumbbell", "kurtosis_picth_dumbbell", "kurtosis_yaw_dumbbell", "skewness_roll_dumbbell",
+"skewness_pitch_dumbbell", "skewness_yaw_dumbbell", "max_yaw_dumbbell", "min_yaw_dumbbell",
+"amplitude_yaw_dumbbell", "kurtosis_roll_forearm", "kurtosis_picth_forearm", "kurtosis_yaw_forearm",
+"skewness_roll_forearm", "skewness_pitch_forearm", "skewness_yaw_forearm", "max_roll_forearm",
+"max_yaw_forearm", "min_roll_forearm", "min_yaw_forearm", "amplitude_roll_forearm",
+"amplitude_yaw_forearm", "avg_roll_forearm", "stddev_roll_forearm", "var_roll_forearm",
+"avg_pitch_forearm", "stddev_pitch_forearm", "var_pitch_forearm", "avg_yaw_forearm",
+"stddev_yaw_forearm", "var_yaw_forearm")
+training <- training[!NZVvars]
+
+training_bis <- training
+
+for(i in 1:length(training)) { #for every column in the training dataset
+        if( sum( is.na( training[, i] ) ) /nrow(training) >= .6 ) { #if n?? NAs > 60% of total observations
+        for(j in 1:length(training_bis)) {
+            if( length( grep(names(training[i]), names(training_bis)[j]) ) ==1)  { #if the columns are the same:
+                training_bis <- training_bis[ , -j] #Remove that column
+            }   
+        } 
+    }
+}
+
+training <- training_bis
+
+```
+
+The trainin set is now ready to be used to build the model.
+
+### 2. modeling method: Random Forest.
+
+```{r}
+
+fitControl <- trainControl(## 10-fold CV
+                           method = "repeatedcv",
+                           number = 10,
+                           ## repeated ten times
+                           repeats = 10)
+
+fit.rf <- train(classe~., method='gbm', data= training)
+
+
+#fit.gbm <- train(classe~., method="gbm", data= training, trControl=fitControl) 
+
+#pred.gbm <- predict(fit.gbm, newdata=testing)
+pred.rf <- predict(fit.rf, newdata = testing)
+
+confusionMatrix(pred.rf,testing$classe )$overall['Accuracy']
+#confusionMatrix(testing$classe, pred.gbm)$overall['Accuracy']
+
+```
+
+
+### 3. Using Random Forest model to predict
+
+```{r}
+
+data.stack <- data.frame(pred.rf,pred.gbm, classe = testing$classe)
+fit.stack <- train(classe~., method='rf',data= data.stack)
+
+pred.stack <- predict(fit.stack,newdata=data.stack)
+confusionMatrix(data.stack$classe, pred.stack)$overall['Accuracy']
+
+```
+
+### 4. Apply the final on test data set to predict the variable classe
+
+```{r}
+
+testing <- read.csv('pml-testing.csv', na.strings = c("", "NA", "#DIV/0!"))
+pred.testing <- predict(fit.rf, newdata = testing)
+
+pred.testing
+
+confusionMatrix(testing$classe, pred.testing)
+```

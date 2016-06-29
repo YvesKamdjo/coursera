@@ -1,0 +1,86 @@
+---
+title: "Regression Models Course Project"
+author: "YE"
+date: "may, 15th 2016"
+output: html_document
+---
+
+
+#Executive Summary
+
+The goal of this project is to explore the relationship between a set of variables and Miles per Galon (MPG) in the MTCARS dataset.
+
+##The dataset
+
+###Format
+
+A data frame with 32 observations on 11 variables.
+
+###Source
+
+Henderson and Velleman (1981), Building multiple regression models interactively. Biometrics, 37, 391–411.
+
+```{r}
+head(mtcars)
+```
+#ANALYSIS
+
+
+## 1. Is an automatic or manual transmission better for MPG ?
+
+###EXPLORATORY DATA ANALYSIS
+
+
+```{r, echo=TRUE}
+    data(mtcars)
+    require(ggplot2)
+    
+    g = ggplot(data=mtcars,aes(y=mpg,x=factor(am), colour=factor(am) ) )
+    g = g+ geom_point()
+    g = g + geom_smooth(method='lm', colour="black", aes(group=0))
+    g = g + xlab("Auto(0) - manual(1) transmission") + ylab("Miles/Galon")
+    g
+```
+
+```{r, echo=TRUE}
+    aggregate(mpg~am, data = mtcars, mean)
+```
+
+The Manual MPG is higher than the Auto MPG, we are going to investigate if this difference is important and find if the others variables have an impact.
+
+By fitting a linear regression, we have the following:
+````{r, echo=TRUE}
+    data(mtcars)
+    fit <- lm(formula= mpg~as.factor(am),data=mtcars)
+    summary(fit)
+```
+###Conclusion:
+* P-value = 0.000285, we reject the null hypothesis that is, we declare a relationship to exist between MPG and AM (transmission). 
+* The manual transmission (AM=1) spends 17.147+7.245 = 24.392 Galon each mile. The automatic Transmission spends 17.147 Galons every mile. __We can say that Manual transmission is better for MPG__.
+
+
+## 2. Quantify the MPG difference between automatic and manual transmissions
+
+A look to the R-Squared above, 0.3598 (= 36%), shows that, this regression has explained only 36% of the variability of the MPG. We need to fit a multiple linear model to explain the difference (7.245) between automatic and manual transmission.
+
+### Multiple linear regression
+```{r, echo=TRUE}
+    data(mtcars)
+    summary(lm(formula= mpg~.,data=mtcars))
+    
+```
+Through this regression we can seen that:
+* wt (p-value=0.0633), qsec (p-value=0.2739) and am(p-value=0.2340) have the most fewest p-values, so we can fit another model with that only 3 variables:
+
+--
+### Final Multiple linear regression
+```{r, echo=TRUE}
+    data(mtcars)
+    summary(lm(formula= mpg~as.factor(am)+qsec+wt,data=mtcars))
+    
+```
+###Conclusion:
+
+*According to this final model, we have R-Squared = 0.8497, so 85% of the variability of MPG is explained through this regression. 
+
+*__The difference between Automatic and Manual transmission is 2.9358 when we include qsec and wt varaiables__.

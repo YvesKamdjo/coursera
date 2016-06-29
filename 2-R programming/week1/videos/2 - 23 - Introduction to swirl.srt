@@ -1,0 +1,117 @@
+1
+00:00:01,060 --> 00:00:01,450
+Hi, everyone.
+
+2
+00:00:01,450 --> 00:00:03,840
+I just want to introduce a experimental
+feature that
+
+3
+00:00:03,840 --> 00:00:06,680
+we've, that we've developed for the R
+programming class.
+
+4
+00:00:06,680 --> 00:00:11,570
+It's called Statistics with Interactive R
+Learning or SWIRL for short.
+
+5
+00:00:11,570 --> 00:00:13,650
+And it's, and it was developed by Nick
+Carchedi, who's
+
+6
+00:00:13,650 --> 00:00:16,930
+a student here at the Johns Hopkins
+department of bio-statistics.
+
+7
+00:00:16,930 --> 00:00:21,620
+This is a system that allows you to kind
+of interactively learn R at your own pace.
+
+8
+00:00:21,620 --> 00:00:24,900
+And it will walk you through a, a bunch of
+lessons about different
+
+9
+00:00:24,900 --> 00:00:28,510
+aspects of the R language and you can kind
+of practice as you go.
+
+10
+00:00:28,510 --> 00:00:31,122
+So, rather than kind of watching a lecture
+and then,
+
+11
+00:00:31,122 --> 00:00:33,170
+you know, doing an assignment and kind of
+doing things
+
+12
+00:00:33,170 --> 00:00:36,020
+piece by piece, you can actually work on R
+right
+
+13
+00:00:36,020 --> 00:00:38,940
+in the R console in, in a kind of guided
+way.
+
+14
+00:00:38,940 --> 00:00:41,660
+Rather than kind of just figuring things
+out on your own.
+
+15
+00:00:41,660 --> 00:00:44,260
+So, I think this, the SWIRL modules are
+really helpful
+
+16
+00:00:44,260 --> 00:00:45,850
+and I encourage you to try to walk through
+them.
+
+17
+00:00:47,080 --> 00:00:49,400
+If you decide to complete them you'll get
+you'll
+
+18
+00:00:49,400 --> 00:00:52,410
+get a little extra credit through the
+programming assignment.
+
+19
+00:00:52,410 --> 00:00:55,680
+But the, the modules are absolutely not
+required.
+
+20
+00:00:55,680 --> 00:00:56,960
+They are totally optional.
+
+21
+00:00:56,960 --> 00:00:59,590
+And so, you don't have to worry about
+doing them.
+
+22
+00:00:59,590 --> 00:01:03,410
+You can still do perfectly well in the
+class without doing the SWIRL modules.
+
+23
+00:01:03,410 --> 00:01:05,060
+Nevertheless, I encourage you to try it
+out.
+
+24
+00:01:05,060 --> 00:01:06,100
+I think it'll be a lot of fun.
+
